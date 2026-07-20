@@ -18,6 +18,13 @@ export default function HeroSlideshow() {
   const [currentIndex, setCurrentIndex] = useState(0);
 
   useEffect(() => {
+    // Memaksa browser (terutama Safari iOS) untuk men-download gambar di belakang layar
+    // agar saat giliran slide-nya muncul, gambar sudah siap dan tidak blank.
+    IMAGES.forEach((src) => {
+      const img = new window.Image();
+      img.src = src;
+    });
+
     const timer = setInterval(() => {
       setCurrentIndex((prev) => (prev + 1) % IMAGES.length);
     }, 6000); // 6 seconds per slide
