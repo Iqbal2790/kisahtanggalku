@@ -58,7 +58,7 @@ export function ResultCard({
       const dataUrl = await toPng(cardRef.current, {
         quality: 1,
         pixelRatio: 2, // High resolution
-        cacheBust: true, // Prevent caching issues with fonts/images
+        cacheBust: false, // Matikan cacheBust agar render lebih cepat di iOS (mencegah Share timeout)
       });
       
       // Deteksi Web Share API (sangat berguna untuk iOS/Safari)
