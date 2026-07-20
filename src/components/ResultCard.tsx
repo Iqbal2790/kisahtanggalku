@@ -61,6 +61,25 @@ export function ResultCard({
         cacheBust: true, // Prevent caching issues with fonts/images
       });
       
+      // Deteksi Web Share API (sangat berguna untuk iOS/Safari)
+      if (navigator.share) {
+        try {
+          const blob = await (await fetch(dataUrl)).blob();
+          const file = new File([blob], `kisahtanggalku-${dateStr}.png`, { type: blob.type });
+          if (navigator.canShare && navigator.canShare({ files: [file] })) {
+            await navigator.share({
+              files: [file],
+              title: "Kisahtanggalku",
+              text: "Lihat kisah di balik tanggal lahirku!"
+            });
+            window.dispatchEvent(new CustomEvent("download-complete"));
+            return;
+          }
+        } catch (shareErr) {
+          console.log("Membatalkan share atau share tidak didukung", shareErr);
+        }
+      }
+      
       const link = document.createElement("a");
       link.download = `kisahtanggalku-${dateStr}.png`;
       link.href = dataUrl;
