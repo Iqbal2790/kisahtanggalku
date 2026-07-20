@@ -80,8 +80,13 @@ export async function getOnThisDay(month: number, day: number, year?: number): P
   
   const shrunkData = await fetchAndShrinkWikiData(mm, dd);
 
-  // Proses events (maksimal 5)
-  const events = shrunkData.events.slice(0, 5);
+  // Proses events (maksimal 5, prioritaskan yang tahunnya paling dekat)
+  let processedEvents = [...shrunkData.events];
+  if (year) {
+    processedEvents.sort((a, b) => Math.abs(a.year - year) - Math.abs(b.year - year));
+  }
+  // Ambil 5 terdekat, lalu urutkan kembali secara kronologis (terbaru ke terlama)
+  const events = processedEvents.slice(0, 5).sort((a, b) => b.year - a.year);
 
   // Proses births (maksimal 3, hanya di tahun yang sama)
   let exactYearBirths: FamousPerson[] = [];
