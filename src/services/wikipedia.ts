@@ -95,8 +95,24 @@ export async function getOnThisDay(month: number, day: number, year?: number): P
   }
   const births = exactYearBirths.slice(0, 3);
 
-  // Proses holidays (maksimal 3)
-  const holidays = shrunkData.holidays.slice(0, 3);
+  // Proses holidays (maksimal 3, prioritaskan yang relevan untuk audiens Indonesia/Global)
+  const sortedHolidays = [...shrunkData.holidays].sort((a, b) => {
+    const aLower = a.toLowerCase();
+    const bLower = b.toLowerCase();
+    
+    const getScore = (text: string) => {
+      let score = 0;
+      if (text.includes("indonesia")) score += 100;
+      if (text.includes("national") || text.includes("independence") || text.includes("republic")) score += 50;
+      if (text.includes("world") || text.includes("international") || text.includes("global") || text.includes("day")) score += 30;
+      if (text.includes("christian feast day") || text.includes("saint") || text.includes("orthodox") || text.includes("liturgics")) score -= 50;
+      return score;
+    };
+    
+    return getScore(bLower) - getScore(aLower);
+  });
+  
+  const holidays = sortedHolidays.slice(0, 3);
 
   return { events, births, holidays };
 }
